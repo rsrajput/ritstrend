@@ -4,24 +4,29 @@ mod loader;
 mod models;
 mod utils;
 
+use anyhow::Result;
 use clap::Parser;
 
-fn main() -> anyhow::Result<()> {
+use cli::Cli;
+use config::Config;
 
-    let cli = cli::Cli::parse();
+fn main() -> Result<()> {
+    let cli = Cli::parse();
 
-    let cfg = config::Config::load(&cli.config)?;
+    let config = Config::load(&cli.config)?;
 
     let tickers = utils::read_tickers(&cli.tickers_file)?;
 
-    println!("======================================");
-    println!(" RitsTrend");
-    println!("======================================");
-    println!("Tickers      : {}", tickers.len());
-    println!("Data Folder  : {}", cli.data_dir);
-    println!("Breakout     : {}", cfg.breakout_period);
-    println!("ATR Period   : {}", cfg.atr_period);
-    println!("ADX Period   : {}", cfg.adx_period);
+    println!("========================================");
+    println!("           RitsTrend v0.1");
+    println!("========================================");
+    println!("Tickers loaded : {}", tickers.len());
+    println!("Data directory : {}", cli.data_dir);
+    println!("Breakout       : {}", config.breakout_period);
+    println!("Exit           : {}", config.exit_period);
+    println!("ATR            : {}", config.atr_period);
+    println!("ADX            : {}", config.adx_period);
+    println!("========================================");
 
     Ok(())
 }
