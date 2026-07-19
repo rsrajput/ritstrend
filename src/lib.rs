@@ -1,5 +1,6 @@
 pub mod adx;
 pub mod analysis;
+pub mod atr;
 pub mod cli;
 pub mod config;
 pub mod indicator_engine;
