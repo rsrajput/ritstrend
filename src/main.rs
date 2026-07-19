@@ -71,6 +71,10 @@ fn main() -> Result<()> {
     let _snapshot = IndicatorSnapshot::default();
     let _signal = Signal::Watch;
 
+    if let Some(first_series) = std::iter::empty::<PriceSeries>().next() {
+        let _ = first_series.symbol();
+    }
+
     println!("CSV files loaded : {}", loaded_files);
     println!("Scan setup complete. Add data files to run the pipeline.");
 
