@@ -195,6 +195,61 @@ impl StockAnalysisBuilder {
         self
     }
 
+    /// Set the ticker symbol through a mutable builder reference.
+    pub fn set_symbol(&mut self, symbol: impl Into<String>) {
+        self.symbol = Some(symbol.into());
+    }
+
+    /// Set the latest close price through a mutable builder reference.
+    pub fn set_latest_close(&mut self, latest_close: f64) {
+        self.latest_close = Some(latest_close);
+    }
+
+    /// Set the latest volume through a mutable builder reference.
+    pub fn set_latest_volume(&mut self, latest_volume: f64) {
+        self.latest_volume = Some(latest_volume);
+    }
+
+    /// Set the latest date through a mutable builder reference.
+    pub fn set_latest_date(&mut self, latest_date: NaiveDate) {
+        self.latest_date = Some(latest_date);
+    }
+
+    /// Set the 50-period moving average through a mutable builder reference.
+    pub fn set_sma50(&mut self, sma50: f64) {
+        self.sma50 = Some(sma50);
+    }
+
+    /// Set the 200-period moving average through a mutable builder reference.
+    pub fn set_sma200(&mut self, sma200: f64) {
+        self.sma200 = Some(sma200);
+    }
+
+    /// Set the 50-period average volume through a mutable builder reference.
+    pub fn set_average_volume50(&mut self, average_volume50: f64) {
+        self.average_volume50 = Some(average_volume50);
+    }
+
+    /// Set the 55-period Donchian high through a mutable builder reference.
+    pub fn set_donchian_high55(&mut self, donchian_high55: f64) {
+        self.donchian_high55 = Some(donchian_high55);
+    }
+
+    /// Set the 20-period Donchian low through a mutable builder reference.
+    pub fn set_donchian_low20(&mut self, donchian_low20: f64) {
+        self.donchian_low20 = Some(donchian_low20);
+    }
+
+    /// Set the six-month return through a mutable builder reference.
+    pub fn set_return6m(&mut self, return6m: f64) {
+        self.return6m = Some(return6m);
+    }
+
+    /// Set the twelve-month return through a mutable builder reference.
+    pub fn set_return12m(&mut self, return12m: f64) {
+        self.return12m = Some(return12m);
+    }
+
     /// Build the immutable StockAnalysis value.
     pub fn build(self) -> StockAnalysis {
         StockAnalysis {

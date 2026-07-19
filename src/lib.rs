@@ -2,6 +2,7 @@ pub mod adx;
 pub mod analysis;
 pub mod cli;
 pub mod config;
+pub mod indicator_engine;
 pub mod indicators;
 pub mod loader;
 pub mod models;
