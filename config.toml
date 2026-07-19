@@ -1,0 +1,14 @@
+breakout_period = 55
+exit_period = 20
+
+sma_fast = 50
+sma_slow = 200
+
+atr_period = 15
+adx_period = 14
+
+volume_period = 50
+volume_factor = 1.5
+
+relative_strength_months = 6
+top_percent = 25
