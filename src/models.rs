@@ -69,7 +69,7 @@ impl Default for IndicatorSnapshot {
 
 /// The decision emitted by the screening stage.
 #[allow(dead_code)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum Signal {
     /// A strong buy candidate.
     Buy,
