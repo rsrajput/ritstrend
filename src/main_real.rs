@@ -78,12 +78,6 @@ fn main() -> Result<()> {
     }
 
     RankingEngine::rank(&mut analyses);
-    println!("\n========== FIRST 10 ANALYSES ==========");
-
-    for analysis in analyses.iter().take(10) {
-        println!("{:#?}", analysis);
-    }
-
     let buys = Screener::screen(&analyses, config.top_percent, config.volume_factor);
 
     let report_dir = std::path::Path::new(&cli.report_dir);
