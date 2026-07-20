@@ -5,8 +5,6 @@ use crate::models::Signal;
 pub struct Screener;
 
 impl Screener {
-    pub fn new() -> Self { Self }
-
     pub fn screen(
         analyses: &[StockAnalysis],
         top_percent: usize,

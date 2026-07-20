@@ -10,11 +10,6 @@ use crate::analysis::StockAnalysis;
 pub struct ReportGenerator;
 
 impl ReportGenerator {
-    /// Create a new report generator instance.
-    pub fn new() -> Self {
-        Self
-    }
-
     /// Write buy candidates to a CSV report in the target directory.
     pub fn write(analyses: &[StockAnalysis], report_dir: impl AsRef<Path>, filename: &str) -> Result<()> {
         let report_dir = report_dir.as_ref();

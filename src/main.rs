@@ -2,6 +2,7 @@ mod adx;
 mod analysis;
 mod cli;
 mod config;
+mod console_report;
 mod indicator_engine;
 mod indicators;
 mod loader;

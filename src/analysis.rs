@@ -81,6 +81,7 @@ pub struct StockAnalysisBuilder {
     reasons: Option<Vec<String>>,
 }
 
+#[allow(dead_code)]
 impl StockAnalysisBuilder {
     /// Create a new builder with all fields unset.
     pub fn new() -> Self {

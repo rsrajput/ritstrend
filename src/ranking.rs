@@ -5,11 +5,6 @@ use crate::analysis::StockAnalysis;
 pub struct RankingEngine;
 
 impl RankingEngine {
-    /// Create a new ranking engine instance.
-    pub fn new() -> Self {
-        Self
-    }
-
     /// Rank the supplied analyses by six-month return descending.
     pub fn rank(analyses: &mut [StockAnalysis]) {
         analyses.sort_by(|left, right| {
