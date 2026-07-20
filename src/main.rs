@@ -1,6 +1,8 @@
 mod adx;
+mod analysis;
 mod cli;
 mod config;
+mod indicator_engine;
 mod indicators;
 mod loader;
 mod models;
@@ -15,11 +17,15 @@ mod wilder;
 use anyhow::{Context, Result};
 use clap::Parser;
 
+use crate::analysis::StockAnalysisBuilder;
 use crate::cli::Cli;
 use crate::config::Config;
+use crate::indicator_engine::IndicatorEngine;
 use crate::loader::load_history;
-use crate::models::{IndicatorSnapshot, Signal};
 use crate::price_series::PriceSeries;
+use crate::ranking::RankingEngine;
+use crate::report::ReportGenerator;
+use crate::screener::Screener;
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
@@ -42,42 +48,44 @@ fn main() -> Result<()> {
     println!("========================================");
 
     let data_dir = std::path::Path::new(&cli.data_dir);
+    let mut analyses = Vec::new();
     let mut loaded_files = 0usize;
 
     if data_dir.exists() {
-        for entry in std::fs::read_dir(data_dir)? {
-            let entry = entry?;
-            let path = entry.path();
-
-            if path.extension().and_then(std::ffi::OsStr::to_str) == Some("csv") {
-                let csv_path = path.to_string_lossy().into_owned();
-                let candles = load_history(&csv_path)
-                    .with_context(|| format!("unable to read candles from {}", csv_path))?;
-
-                let symbol = path
-                    .file_stem()
-                    .and_then(std::ffi::OsStr::to_str)
-                    .map(str::to_string)
-                    .unwrap_or_else(|| String::from("unknown"));
-
-                let _series = PriceSeries::new(symbol, candles)
-                    .with_context(|| format!("unable to build price series for {}", csv_path))?;
-                loaded_files += 1;
+        for ticker in &tickers {
+            let csv_path = data_dir.join(format!("{ticker}.csv"));
+            if !csv_path.exists() {
+                println!("Skipping {} (missing {})", ticker, csv_path.display());
+                continue;
             }
+
+            let csv_path_str = csv_path.to_string_lossy().into_owned();
+            let candles = load_history(&csv_path_str)
+                .with_context(|| format!("unable to read candles from {}", csv_path_str))?;
+
+            let series = PriceSeries::new(ticker.as_str(), candles)
+                .with_context(|| format!("unable to build price series for {}", csv_path_str))?;
+
+            let mut builder = StockAnalysisBuilder::new();
+            IndicatorEngine::analyze(&series, &mut builder)
+                .with_context(|| format!("unable to analyze {}", ticker))?;
+
+            analyses.push(builder.build());
+            loaded_files += 1;
         }
     } else {
         println!("No data directory found at {}", cli.data_dir);
     }
 
-    let _snapshot = IndicatorSnapshot::default();
-    let _signal = Signal::Watch;
+    RankingEngine::rank(&mut analyses);
+    let buys = Screener::screen(&analyses, config.top_percent, config.volume_factor);
 
-    if let Some(first_series) = std::iter::empty::<PriceSeries>().next() {
-        let _ = first_series.symbol();
-    }
+    let report_dir = std::path::Path::new(&cli.report_dir);
+    ReportGenerator::write(&buys, report_dir, "BUY.csv")?;
 
     println!("CSV files loaded : {}", loaded_files);
-    println!("Scan setup complete. Add data files to run the pipeline.");
+    println!("BUY candidates   : {}", buys.len());
+    println!("Report written  : {}/BUY.csv", report_dir.display());
 
     Ok(())
 }

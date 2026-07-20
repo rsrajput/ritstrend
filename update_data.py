@@ -53,6 +53,10 @@ def download(symbol: str, outdir: Path, period: str):
         if df.empty:
             return symbol, False, "No data"
 
+        # Flatten MultiIndex columns returned by newer yfinance versions.
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.get_level_values(0)
+
         df = df.reset_index()
 
         keep = ["Date", "Open", "High", "Low", "Close", "Volume"]
