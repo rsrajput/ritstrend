@@ -17,6 +17,8 @@ impl IndicatorEngine {
     /// Analyze a price series and populate the builder with the supported
     /// simple indicators.
     pub fn analyze(series: &PriceSeries, builder: &mut StockAnalysisBuilder) -> Result<()> {
+        builder.set_symbol(series.symbol());
+
         if let Some(latest) = series.latest() {
             builder.set_latest_close(latest.close);
             builder.set_latest_volume(latest.volume);
