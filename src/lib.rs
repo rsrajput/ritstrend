@@ -13,3 +13,4 @@ pub mod ranking;
 pub mod report;
 pub mod screener;
 pub mod utils;
+pub mod wilder;

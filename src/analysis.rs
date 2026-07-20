@@ -230,6 +230,11 @@ impl StockAnalysisBuilder {
         self.average_volume50 = Some(average_volume50);
     }
 
+    /// Set the 14-period ADX value through a mutable builder reference.
+    pub fn set_adx14(&mut self, adx14: f64) {
+        self.adx14 = Some(adx14);
+    }
+
     /// Set the 55-period Donchian high through a mutable builder reference.
     pub fn set_donchian_high55(&mut self, donchian_high55: f64) {
         self.donchian_high55 = Some(donchian_high55);

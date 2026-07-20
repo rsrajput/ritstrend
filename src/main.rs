@@ -10,6 +10,7 @@ mod ranking;
 mod report;
 mod screener;
 mod utils;
+mod wilder;
 
 use anyhow::{Context, Result};
 use clap::Parser;

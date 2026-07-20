@@ -1,5 +1,6 @@
 use anyhow::Result;
 
+use crate::adx::AdxCalculator;
 use crate::analysis::StockAnalysisBuilder;
 use crate::models::Candle;
 use crate::price_series::PriceSeries;
@@ -40,6 +41,10 @@ impl IndicatorEngine {
 
         if let Some(average_volume50) = Self::average_volume(series, 50) {
             builder.set_average_volume50(average_volume50);
+        }
+
+        if let Some(adx14) = AdxCalculator::adx(series, 14) {
+            builder.set_adx14(adx14);
         }
 
         if let Some(return6m) = Self::return_period(series, 126) {
