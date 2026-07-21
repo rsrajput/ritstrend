@@ -1,7 +1,6 @@
-//! score_engine.rs
-//!
-//! Non-invasive scoring layer for RitsTrend.
-//! Does not change BUY logic; it only scores existing analyses.
+//! score_engine_v2.rs
+//! Enhanced scoring engine for RitsTrend.
+//! Backward-compatible with the current architecture.
 
 use crate::analysis::StockAnalysis;
 
@@ -38,30 +37,45 @@ impl ScoreEngine {
         let don55 = analysis.donchian_high55.unwrap_or(0.0);
         let adx = analysis.adx14.unwrap_or(0.0);
         let vol = analysis.latest_volume.unwrap_or(0.0);
-        let avg50 = analysis.average_volume50.unwrap_or(0.0);
+        let avg = analysis.average_volume50.unwrap_or(0.0);
         let rs = analysis.relative_strength_rank.unwrap_or(usize::MAX);
 
-        if close > don55 { score += 30; } else { reasons.push("No breakout".into()); }
+        if close > don55 { score += 25; } else { reasons.push("Waiting for breakout".into()); }
         if close > sma200 { score += 20; } else { reasons.push("Below SMA200".into()); }
-        if sma50 > sma200 { score += 15; } else { reasons.push("SMA50 ≤ SMA200".into()); }
-        if adx >= 25.0 { score += 15; } else { reasons.push(format!("ADX {:.1}<25", adx)); }
-        if avg50 > 0.0 && vol >= volume_factor * avg50 {
-            score += 10;
+        if sma50 > sma200 { score += 15; } else { reasons.push("Weak moving-average trend".into()); }
+
+        if adx >= 40.0 {
+            score += 18;
+        } else if adx >= 25.0 {
+            score += 15;
         } else {
-            reasons.push("Volume weak".into());
+            reasons.push(format!("ADX {:.1} below 25", adx));
         }
-        if rs <= rs_threshold {
+
+        if avg > 0.0 && vol >= volume_factor * avg {
             score += 10;
         } else {
-            reasons.push("RS outside threshold".into());
+            reasons.push("Volume confirmation missing".into());
+        }
+
+        if rs <= rs_threshold / 2 {
+            score += 12;
+        } else if rs <= rs_threshold {
+            score += 10;
+        } else {
+            reasons.push("Relative strength outside threshold".into());
         }
 
         let rating = match score {
-            90..=100 => Rating::Buy,
+            90..=u8::MAX => Rating::Buy,
             75..=89 => Rating::Watch,
             60..=74 => Rating::Monitor,
             _ => Rating::Ignore,
         };
+
+        if reasons.is_empty() {
+            reasons.push("All conditions satisfied".into());
+        }
 
         StockScore {
             symbol: analysis.symbol.clone(),
