@@ -12,3 +12,8 @@ volume_factor = 0.1 # 1.5
 
 relative_strength_months = 6
 top_percent = 25
+
+# Near Breakout Settings
+near_breakout_distance = 2.0
+near_breakout_min_adx = 20.0
+near_breakout_max_rs_rank = 125

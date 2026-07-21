@@ -12,7 +12,7 @@ impl ConsoleReport {
         missing_files: usize,
         rs_threshold: usize,
         volume_factor: f64,
-        near_breakouts: &[NearBreakout],
+        _near_breakouts: &[NearBreakout],
     ) {
         let mut scores = ScoreEngine::score_all(analyses, rs_threshold, volume_factor);
         scores.sort_by(|a,b| b.score.cmp(&a.score));
@@ -54,28 +54,6 @@ impl ConsoleReport {
             let reason=s.reasons.first().map(String::as_str).unwrap_or("All conditions satisfied");
             println!("{:<4} {:<14} {:>10.2} {:>4} {:>5} {:<9} {}", i+1, s.symbol, close, rs_rank, s.score, rating, reason);
         }
-
-        println!("{}", "-".repeat(94));
-
-        println!();
-        println!("==========================================================================");
-        println!("                    NEAR BREAKOUTS (≤ 2%)");
-        println!("==========================================================================");
-        println!("{:<4} {:<14} {:>10} {:>10} {:>10}",
-                 "Rank","Symbol","Close","Breakout","Distance");
-        println!("{}", "-".repeat(94));
-
-        for (i, nb) in near_breakouts.iter().take(10).enumerate() {
-            println!(
-                "{:<4} {:<14} {:>10.2} {:>10.2} {:>9.2}%",
-                i+1,
-                nb.symbol,
-                nb.close,
-                nb.breakout_price,
-                nb.distance_percent
-            );
-        }
-
         println!("{}", "-".repeat(94));
     }
 }

@@ -15,7 +15,6 @@ mod ranking;
 mod report;
 mod score_engine;
 mod screener;
-mod trade_candidate;
 mod utils;
 mod wilder;
 
@@ -92,8 +91,12 @@ fn main() -> Result<()> {
     let missing_files = tickers.len().saturating_sub(analyses.len());
 
     // Build Near Breakout watchlist (used in next dashboard revision)
-    let _near_breakouts =
-        NearBreakoutEngine::find(&analyses, 2.0);
+    let _near_breakouts = NearBreakoutEngine::find(
+        &analyses,
+        config.near_breakout_distance,
+        config.near_breakout_min_adx,
+        config.near_breakout_max_rs_rank,
+    );
 
     ConsoleReport::print(
         &analyses,

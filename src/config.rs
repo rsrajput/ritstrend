@@ -25,6 +25,12 @@ pub struct Config {
     pub relative_strength_months: usize,
     /// Top percentage threshold for ranking-based filtering.
     pub top_percent: usize,
+    /// Near breakout maximum distance (%)
+    pub near_breakout_distance: f64,
+    /// Minimum ADX for near breakout
+    pub near_breakout_min_adx: f64,
+    /// Maximum RS rank for near breakout
+    pub near_breakout_max_rs_rank: usize,
 }
 
 impl Default for Config {
@@ -40,6 +46,9 @@ impl Default for Config {
             volume_factor: 1.5,
             relative_strength_months: 6,
             top_percent: 25,
+            near_breakout_distance: 2.0,
+            near_breakout_min_adx: 20.0,
+            near_breakout_max_rs_rank: 125,
         }
     }
 }
