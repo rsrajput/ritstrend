@@ -7,6 +7,7 @@ mod indicator_engine;
 mod indicators;
 mod loader;
 mod market_summary;
+mod near_breakout;
 mod models;
 mod portfolio;
 mod price_series;
@@ -26,6 +27,7 @@ use crate::cli::Cli;
 use crate::config::Config;
 use crate::indicator_engine::IndicatorEngine;
 use crate::loader::load_history;
+use crate::near_breakout::NearBreakoutEngine;
 use crate::price_series::PriceSeries;
 use crate::ranking::RankingEngine;
 use crate::report::ReportGenerator;
@@ -88,11 +90,17 @@ fn main() -> Result<()> {
     // }
 
     let missing_files = tickers.len().saturating_sub(analyses.len());
+
+    // Build Near Breakout watchlist (used in next dashboard revision)
+    let _near_breakouts =
+        NearBreakoutEngine::find(&analyses, 2.0);
+
     ConsoleReport::print(
-    &analyses,
-    missing_files,
-    config.top_percent,
-    config.volume_factor,
+        &analyses,
+        missing_files,
+        config.top_percent,
+        config.volume_factor,
+        &_near_breakouts,
     );
 
     let buys = Screener::screen(&analyses, config.top_percent, config.volume_factor);
