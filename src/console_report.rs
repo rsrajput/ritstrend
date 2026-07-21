@@ -2,6 +2,7 @@
 use crate::analysis::StockAnalysis;
 use crate::score_engine::{Rating, ScoreEngine};
 use crate::near_breakout::NearBreakout;
+use crate::market_summary::MarketSummary;
 use std::collections::HashMap;
 
 pub struct ConsoleReport;
@@ -9,7 +10,7 @@ pub struct ConsoleReport;
 impl ConsoleReport {
     pub fn print(
         analyses: &[StockAnalysis],
-        missing_files: usize,
+        summary: &MarketSummary,
         rs_threshold: usize,
         volume_factor: f64,
         near_breakouts: &[NearBreakout],
@@ -27,9 +28,22 @@ impl ConsoleReport {
 
         println!();
         println!("==========================================================================");
+        println!("                           MARKET HEALTH");
+        println!("==========================================================================");
+        println!(
+            "Stocks Loaded : {}    Missing Files : {}",
+            summary.stocks_loaded,
+            summary.missing_files,
+        );
+        println!("BUY:{}  WATCH:{}  MONITOR:{}  IGNORE:{}", summary.buy_count, summary.watch_count, summary.monitor_count, summary.ignore_count);
+        println!("Strongest     : {} (Score {})", summary.strongest_symbol, summary.highest_score);
+        println!("==========================================================================");
+
+        println!();
+        println!("==========================================================================");
         println!("                           RITS TREND v0.4");
         println!("==========================================================================");
-        println!("Stocks Loaded : {}    Missing Files : {}", analyses.len(), missing_files);
+        println!("Stocks Loaded : {}    Missing Files : {}", analyses.len(), summary.missing_files);
         println!("BUY:{}  WATCH:{}  MONITOR:{}  IGNORE:{}", buy,watch,monitor,ignore);
         println!("{}", "-".repeat(94));
         println!("{:<4} {:<14} {:>10} {:>4} {:>5} {:<9} {}", "Rank","Symbol","Close","RS","Score","Rating","Primary Reason");

@@ -26,6 +26,7 @@ use crate::cli::Cli;
 use crate::config::Config;
 use crate::indicator_engine::IndicatorEngine;
 use crate::loader::load_history;
+use crate::market_summary::MarketSummary;
 use crate::near_breakout::NearBreakoutEngine;
 use crate::price_series::PriceSeries;
 use crate::ranking::RankingEngine;
@@ -98,9 +99,18 @@ fn main() -> Result<()> {
         config.near_breakout_max_rs_rank,
     );
 
+    let summary = MarketSummary::from_scores(
+        &crate::score_engine::ScoreEngine::score_all(
+            &analyses,
+            config.top_percent,
+            config.volume_factor,
+        ),
+        missing_files,
+    );
+
     ConsoleReport::print(
         &analyses,
-        missing_files,
+        &summary,
         config.top_percent,
         config.volume_factor,
         &_near_breakouts,

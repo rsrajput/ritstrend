@@ -17,6 +17,8 @@ pub struct MarketSummary {
 
     pub highest_score: u8,
     pub strongest_symbol: String,
+    pub market_verdict: String,
+    pub trend_confidence: u8,
 }
 
 impl MarketSummary {
@@ -35,6 +37,18 @@ impl MarketSummary {
             .map(|s| (s.score, s.symbol.clone()))
             .unwrap_or((0, String::from("-")));
 
+        let trend_confidence =
+            (((buy_count * 100) + (watch_count * 70) + (monitor_count * 30))
+                / scores.len().max(1)) as u8;
+
+        let market_verdict = if trend_confidence >= 70 {
+            "FAVORABLE"
+        } else if trend_confidence >= 50 {
+            "NEUTRAL"
+        } else {
+            "DEFENSIVE"
+        }.to_string();
+
         Self {
             stocks_loaded: scores.len(),
             missing_files,
@@ -44,6 +58,8 @@ impl MarketSummary {
             ignore_count,
             highest_score,
             strongest_symbol,
+            market_verdict,
+            trend_confidence,
         }
     }
 }
