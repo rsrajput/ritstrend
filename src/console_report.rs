@@ -1,27 +1,54 @@
 //! console_report.rs
+//! Console report with ScoreEngine integration.
+
 use crate::analysis::StockAnalysis;
+use crate::score_engine::{Rating, ScoreEngine};
 
 pub struct ConsoleReport;
 
 impl ConsoleReport {
-    pub fn print(analyses: &[StockAnalysis], missing_files: usize) {
+    pub fn print(
+        analyses: &[StockAnalysis],
+        missing_files: usize,
+        rs_threshold: usize,
+        volume_factor: f64,
+    ) {
         println!();
         println!("==============================================================");
-        println!("                     RITS TREND v0.2");
+        println!("                     RITS TREND v0.3");
         println!("==============================================================");
         println!("Stocks Loaded : {}", analyses.len());
         println!("Missing Files : {}", missing_files);
         println!();
-        println!("{:<5} {:<14} {:>10} {:>10} {:>10} {:>8} {:>6}",
-                 "Rank","Symbol","Close","SMA50","SMA200","ADX","RS");
-        println!("{}", "-".repeat(74));
-        for (i,a) in analyses.iter().take(20).enumerate() {
-            println!("{:<5} {:<14} {:>10.2} {:>10.2} {:>10.2} {:>8.1} {:>6}",
-                i+1,a.symbol,a.latest_close.unwrap_or_default(),
-                a.sma50.unwrap_or_default(),a.sma200.unwrap_or_default(),
-                a.adx14.unwrap_or_default(),
-                a.relative_strength_rank.unwrap_or(0));
+
+        let mut scores = ScoreEngine::score_all(
+            analyses,
+            rs_threshold,
+            volume_factor,
+        );
+
+        scores.sort_by(|a, b| b.score.cmp(&a.score));
+
+        println!("{:<5} {:<14} {:>6} {:<9}", "Rank", "Symbol", "Score", "Rating");
+        println!("{}", "-".repeat(42));
+
+        for (i, s) in scores.iter().take(20).enumerate() {
+            let rating = match s.rating {
+                Rating::Buy => "BUY",
+                Rating::Watch => "WATCH",
+                Rating::Monitor => "MONITOR",
+                Rating::Ignore => "IGNORE",
+            };
+
+            println!(
+                "{:<5} {:<14} {:>6} {:<9}",
+                i + 1,
+                s.symbol,
+                s.score,
+                rating
+            );
         }
-        println!("{}", "-".repeat(74));
+
+        println!("{}", "-".repeat(42));
     }
 }

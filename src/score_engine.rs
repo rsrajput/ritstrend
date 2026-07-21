@@ -1,7 +1,7 @@
 //! score_engine.rs
 //!
-//! Scores every stock based on the screening rules instead of returning
-//! a simple BUY / NO BUY decision.
+//! Non-invasive scoring layer for RitsTrend.
+//! Does not change BUY logic; it only scores existing analyses.
 
 use crate::analysis::StockAnalysis;
 
@@ -18,14 +18,6 @@ pub struct StockScore {
     pub symbol: String,
     pub score: u8,
     pub rating: Rating,
-
-    pub breakout: bool,
-    pub trend: bool,
-    pub moving_average: bool,
-    pub adx: bool,
-    pub volume: bool,
-    pub relative_strength: bool,
-
     pub reasons: Vec<String>,
 }
 
@@ -36,68 +28,38 @@ impl ScoreEngine {
         analysis: &StockAnalysis,
         rs_threshold: usize,
         volume_factor: f64,
-        adx_min: f64,
     ) -> StockScore {
-
-        let close = analysis.latest_close.unwrap_or_default();
-        let sma50 = analysis.sma50.unwrap_or_default();
-        let sma200 = analysis.sma200.unwrap_or_default();
-        let don = analysis.donchian_high55.unwrap_or_default();
-        let adx = analysis.adx14.unwrap_or_default();
-        let vol = analysis.latest_volume.unwrap_or_default();
-        let avg = analysis.average_volume50.unwrap_or_default();
-        let rs = analysis.relative_strength_rank.unwrap_or(usize::MAX);
-
-        let breakout = close > don;
-        let trend = close > sma200;
-        let moving_average = sma50 > sma200;
-        let adx_ok = adx >= adx_min;
-        let volume_ok = vol >= volume_factor * avg;
-        let rs_ok = rs <= rs_threshold;
-
-        let mut score: u8 = 0;
+        let mut score = 0u8;
         let mut reasons = Vec::new();
 
-        if breakout {
-            score += 30;
-        } else {
-            reasons.push("No Donchian breakout".into());
-        }
+        let close = analysis.latest_close.unwrap_or(0.0);
+        let sma50 = analysis.sma50.unwrap_or(0.0);
+        let sma200 = analysis.sma200.unwrap_or(0.0);
+        let don55 = analysis.donchian_high55.unwrap_or(0.0);
+        let adx = analysis.adx14.unwrap_or(0.0);
+        let vol = analysis.latest_volume.unwrap_or(0.0);
+        let avg50 = analysis.average_volume50.unwrap_or(0.0);
+        let rs = analysis.relative_strength_rank.unwrap_or(usize::MAX);
 
-        if trend {
-            score += 20;
+        if close > don55 { score += 30; } else { reasons.push("No breakout".into()); }
+        if close > sma200 { score += 20; } else { reasons.push("Below SMA200".into()); }
+        if sma50 > sma200 { score += 15; } else { reasons.push("SMA50 ≤ SMA200".into()); }
+        if adx >= 25.0 { score += 15; } else { reasons.push(format!("ADX {:.1}<25", adx)); }
+        if avg50 > 0.0 && vol >= volume_factor * avg50 {
+            score += 10;
         } else {
-            reasons.push("Below SMA200".into());
+            reasons.push("Volume weak".into());
         }
-
-        if moving_average {
-            score += 15;
+        if rs <= rs_threshold {
+            score += 10;
         } else {
-            reasons.push("SMA50 below SMA200".into());
-        }
-
-        if adx_ok {
-            score += 15;
-        } else {
-            reasons.push(format!("ADX {:.1} below {:.1}", adx, adx_min));
-        }
-
-        if rs_ok {
-            score += 15;
-        } else {
-            reasons.push("Relative Strength rank too low".into());
-        }
-
-        if volume_ok {
-            score += 5;
-        } else {
-            reasons.push("Volume confirmation missing".into());
+            reasons.push("RS outside threshold".into());
         }
 
         let rating = match score {
-            95..=100 => Rating::Buy,
-            80..=94 => Rating::Watch,
-            65..=79 => Rating::Monitor,
+            90..=100 => Rating::Buy,
+            75..=89 => Rating::Watch,
+            60..=74 => Rating::Monitor,
             _ => Rating::Ignore,
         };
 
@@ -105,13 +67,17 @@ impl ScoreEngine {
             symbol: analysis.symbol.clone(),
             score,
             rating,
-            breakout,
-            trend,
-            moving_average,
-            adx: adx_ok,
-            volume: volume_ok,
-            relative_strength: rs_ok,
             reasons,
         }
+    }
+
+    pub fn score_all(
+        analyses: &[StockAnalysis],
+        rs_threshold: usize,
+        volume_factor: f64,
+    ) -> Vec<StockScore> {
+        analyses.iter()
+            .map(|a| Self::score(a, rs_threshold, volume_factor))
+            .collect()
     }
 }

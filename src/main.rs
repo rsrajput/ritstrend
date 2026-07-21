@@ -11,6 +11,7 @@ mod portfolio;
 mod price_series;
 mod ranking;
 mod report;
+mod score_engine;
 mod screener;
 mod utils;
 mod wilder;
@@ -87,7 +88,12 @@ fn main() -> Result<()> {
     }
 
     let missing_files = tickers.len().saturating_sub(analyses.len());
-    ConsoleReport::print(&analyses, missing_files);
+    ConsoleReport::print(
+    &analyses,
+    missing_files,
+    config.top_percent,
+    config.volume_factor,
+    );
 
     let buys = Screener::screen(&analyses, config.top_percent, config.volume_factor);
 
