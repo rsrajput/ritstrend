@@ -6,6 +6,7 @@ mod console_report;
 mod indicator_engine;
 mod indicators;
 mod loader;
+mod market_summary;
 mod models;
 mod portfolio;
 mod price_series;
