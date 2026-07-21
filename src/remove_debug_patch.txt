@@ -1,0 +1,22 @@
+// Patch for src/main.rs
+
+// REMOVE this entire debugging block (or similar):
+
+println!("\n========== FIRST 10 ANALYSES ==========");
+for analysis in analyses.iter().take(10) {
+    println!("{:#?}", analysis);
+}
+
+// Also remove any trailing lines like:
+
+println!("CSV files loaded : {}", analyses.len());
+println!("BUY candidates   : {}", buys.len());
+println!("Report written  : reports/BUY.csv");
+
+// Keep the existing calls to:
+//
+// ConsoleReport::print(...)
+// print_breakout_diagnostics(...)
+//
+// The terminal output will then start directly with the
+// RITS TREND dashboard instead of the verbose debug dump.

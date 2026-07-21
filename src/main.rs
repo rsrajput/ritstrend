@@ -82,11 +82,11 @@ fn main() -> Result<()> {
     }
 
     RankingEngine::rank(&mut analyses);
-    println!("\n========== FIRST 10 ANALYSES ==========");
+    // println!("\n========== FIRST 10 ANALYSES ==========");
 
-    for analysis in analyses.iter().take(10) {
-        println!("{:#?}", analysis);
-    }
+    // for analysis in analyses.iter().take(10) {
+    //     println!("{:#?}", analysis);
+    // }
 
     let missing_files = tickers.len().saturating_sub(analyses.len());
     ConsoleReport::print(
@@ -101,9 +101,9 @@ fn main() -> Result<()> {
     let report_dir = std::path::Path::new(&cli.report_dir);
     ReportGenerator::write(&buys, report_dir, "BUY.csv")?;
 
-    println!("CSV files loaded : {}", loaded_files);
-    println!("BUY candidates   : {}", buys.len());
-    println!("Report written  : {}/BUY.csv", report_dir.display());
+    // println!("CSV files loaded : {}", loaded_files);
+    // println!("BUY candidates   : {}", buys.len());
+    // println!("Report written  : {}/BUY.csv", report_dir.display());
 
     Ok(())
 }
