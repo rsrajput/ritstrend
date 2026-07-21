@@ -14,6 +14,7 @@ mod ranking;
 mod report;
 mod score_engine;
 mod screener;
+mod trade_candidate;
 mod utils;
 mod wilder;
 
@@ -53,7 +54,6 @@ fn main() -> Result<()> {
 
     let data_dir = std::path::Path::new(&cli.data_dir);
     let mut analyses = Vec::new();
-    let mut loaded_files = 0usize;
 
     if data_dir.exists() {
         for ticker in &tickers {
@@ -75,7 +75,6 @@ fn main() -> Result<()> {
                 .with_context(|| format!("unable to analyze {}", ticker))?;
 
             analyses.push(builder.build());
-            loaded_files += 1;
         }
     } else {
         println!("No data directory found at {}", cli.data_dir);
