@@ -8,7 +8,7 @@ atr_period = 15
 adx_period = 14
 
 volume_period = 10 # 50
-volume_factor = 0.1 # 1.5
+volume_factor = 1.5 # 1.5
 
 relative_strength_months = 6
 top_percent = 25

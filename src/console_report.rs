@@ -28,7 +28,7 @@ impl ConsoleReport {
 
         println!();
         println!("==========================================================================");
-        println!("                           MARKET HEALTH");
+        println!("                           SCAN SUMMARY");
         println!("==========================================================================");
         println!(
             "Stocks Loaded : {}    Missing Files : {}",
