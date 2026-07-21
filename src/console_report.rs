@@ -25,8 +25,8 @@ impl ConsoleReport {
         println!("==========================================================================");
         println!("Stocks Loaded : {}    Missing Files : {}", analyses.len(), missing_files);
         println!("BUY:{}  WATCH:{}  MONITOR:{}  IGNORE:{}", buy,watch,monitor,ignore);
-        println!("{}", "-".repeat(78));
-        println!("{:<4} {:<14} {:>10} {:>5} {:<9} {}", "Rank","Symbol","Close","Score","Rating","Primary Reason");
+        println!("{}", "-".repeat(94));
+        println!("{:<4} {:<14} {:>10} {:>4} {:>5} {:<9} {}", "Rank","Symbol","Close","RS","Score","Rating","Primary Reason");
         println!("{}", "-".repeat(78));
         for (i,s) in scores.iter().take(20).enumerate() {
             let close = analyses
@@ -35,6 +35,12 @@ impl ConsoleReport {
                 .and_then(|a| a.latest_close)
                 .unwrap_or(0.0);
 
+            let rs_rank = analyses
+                .iter()
+                .find(|a| a.symbol == s.symbol)
+                .and_then(|a| a.relative_strength_rank)
+                .unwrap_or(0);
+
             let rating=match s.rating{
                 Rating::Buy=>"BUY",
                 Rating::Watch=>"WATCH",
@@ -42,7 +48,7 @@ impl ConsoleReport {
                 Rating::Ignore=>"IGNORE",
             };
             let reason=s.reasons.first().map(String::as_str).unwrap_or("All conditions satisfied");
-            println!("{:<4} {:<14} {:>10.2} {:>5} {:<9} {}", i+1, s.symbol, close, s.score, rating, reason);
+            println!("{:<4} {:<14} {:>10.2} {:>4} {:>5} {:<9} {}", i+1, s.symbol, close, rs_rank, s.score, rating, reason);
         }
         println!("{}", "-".repeat(78));
     }
