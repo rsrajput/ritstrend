@@ -27,6 +27,7 @@ use crate::price_series::PriceSeries;
 use crate::ranking::RankingEngine;
 use crate::report::ReportGenerator;
 use crate::screener::Screener;
+use crate::console_report::ConsoleReport;
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
@@ -84,6 +85,9 @@ fn main() -> Result<()> {
     for analysis in analyses.iter().take(10) {
         println!("{:#?}", analysis);
     }
+
+    let missing_files = tickers.len().saturating_sub(analyses.len());
+    ConsoleReport::print(&analyses, missing_files);
 
     let buys = Screener::screen(&analyses, config.top_percent, config.volume_factor);
 

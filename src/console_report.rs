@@ -1,38 +1,27 @@
 //! console_report.rs
-//!
-//! Pretty console reporting for RitsTrend.
-//! This module is independent of the existing report.rs.
-
 use crate::analysis::StockAnalysis;
 
 pub struct ConsoleReport;
 
 impl ConsoleReport {
-    pub fn print(analyses: &[StockAnalysis]) {
+    pub fn print(analyses: &[StockAnalysis], missing_files: usize) {
         println!();
-        println!("==========================================================================");
-        println!("                            RITS TREND v1.0");
-        println!("==========================================================================");
-        println!(
-            "{:<4} {:<15} {:>10} {:>6} {:>8} {:>10}",
-            "Rank", "Symbol", "Close", "RS", "ADX", "Ret6M%"
-        );
-        println!("--------------------------------------------------------------------------");
-
-        for (i, a) in analyses.iter().enumerate().take(25) {
-            println!(
-                "{:<4} {:<15} {:>10.2} {:>6} {:>8.1} {:>10.1}",
-                i + 1,
-                a.symbol,
-                a.latest_close.unwrap_or_default(),
-                a.relative_strength_rank.unwrap_or(0),
+        println!("==============================================================");
+        println!("                     RITS TREND v0.2");
+        println!("==============================================================");
+        println!("Stocks Loaded : {}", analyses.len());
+        println!("Missing Files : {}", missing_files);
+        println!();
+        println!("{:<5} {:<14} {:>10} {:>10} {:>10} {:>8} {:>6}",
+                 "Rank","Symbol","Close","SMA50","SMA200","ADX","RS");
+        println!("{}", "-".repeat(74));
+        for (i,a) in analyses.iter().take(20).enumerate() {
+            println!("{:<5} {:<14} {:>10.2} {:>10.2} {:>10.2} {:>8.1} {:>6}",
+                i+1,a.symbol,a.latest_close.unwrap_or_default(),
+                a.sma50.unwrap_or_default(),a.sma200.unwrap_or_default(),
                 a.adx14.unwrap_or_default(),
-                a.return6m.unwrap_or_default() * 100.0,
-            );
+                a.relative_strength_rank.unwrap_or(0));
         }
-
-        println!("--------------------------------------------------------------------------");
-        println!("Stocks analysed : {}", analyses.len());
-        println!("==========================================================================");
+        println!("{}", "-".repeat(74));
     }
 }
