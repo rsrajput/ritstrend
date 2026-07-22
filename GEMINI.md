@@ -118,3 +118,20 @@ Never finish silently.
 Modify the minimum number of files required.
 
 If additional files are needed, explain why before changing them.
+
+## Terminal Output Philosophy
+
+RitsTrend is a terminal-first application.
+
+Do not generate:
+
+- CSV
+- HTML
+- JSON
+- Reports
+
+unless explicitly requested.
+
+The console output is the product.
+
+Optimize for making trading decisions within 30 seconds after market close.

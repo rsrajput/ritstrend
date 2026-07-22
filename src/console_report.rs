@@ -20,7 +20,7 @@ impl ConsoleReport {
             ScoreEngine::score_all(analyses, rs_threshold, volume_factor, atr_multiplier);
         scores.sort_by(|a, b| b.score.cmp(&a.score));
 
-        let lookup: HashMap<&str, &StockAnalysis> =
+        let _lookup: HashMap<&str, &StockAnalysis> =
             analyses.iter().map(|a| (a.symbol.as_str(), a)).collect();
 
         let buy = scores
@@ -60,7 +60,7 @@ impl ConsoleReport {
 
         println!();
         println!("==========================================================================");
-        println!("                           TRADING DASHBOARD");
+        println!("                           TRADE SETUP DASHBOARD");
         println!("==========================================================================");
         println!(
             "Stocks Loaded : {}    Missing Files : {}",
@@ -73,38 +73,32 @@ impl ConsoleReport {
         );
         println!("{}", "-".repeat(94));
         println!(
-            "{:<4} {:<14} {:>10} {:>4} {:>5} {:<9} {}",
-            "Rank", "Symbol", "Close", "RS", "Score", "Rating", "Primary Reason"
+            "{:<4} {:<14} {:>10} {:>12} {:>8} {:>4} {:>5}",
+            "Rank", "Symbol", "Entry", "Initial Stop", "Risk %", "RS", "Score"
         );
-        println!("Tip: BUY = actionable, WATCH = close to qualifying, MONITOR = trend developing.");
         println!("{}", "-".repeat(94));
-        for (i, s) in scores.iter().take(20).enumerate() {
-            let analysis = lookup.get(s.symbol.as_str()).copied();
 
-            let close = analysis.and_then(|a| a.latest_close).unwrap_or(0.0);
+        let buy_candidates: Vec<&crate::score_engine::StockScore> = scores
+            .iter()
+            .filter(|s| matches!(s.rating, Rating::Buy))
+            .collect();
 
-            let rs_rank = analysis.and_then(|a| a.relative_strength_rank).unwrap_or(0);
+        for (i, s) in buy_candidates.iter().enumerate() {
+            let entry = s.entry_price.unwrap_or(0.0);
+            let stop = s.stop_price.unwrap_or(0.0);
+            let risk = s.risk_percent.unwrap_or(0.0);
+            let rs_rank = s.rs_rank;
+            let score = s.score;
 
-            let rating = match s.rating {
-                Rating::Buy => "BUY",
-                Rating::Watch => "WATCH",
-                Rating::Monitor => "MONITOR",
-                Rating::Ignore => "IGNORE",
-            };
-            let reason = s
-                .reasons
-                .first()
-                .map(String::as_str)
-                .unwrap_or("All conditions satisfied");
             println!(
-                "{:<4} {:<14} {:>10.2} {:>4} {:>5} {:<9} {}",
+                "{:<4} {:<14} {:>10.2} {:>12.2} {:>7.1}% {:>4} {:>5}",
                 i + 1,
                 s.symbol,
-                close,
+                entry,
+                stop,
+                risk,
                 rs_rank,
-                s.score,
-                rating,
-                reason
+                score
             );
         }
 
