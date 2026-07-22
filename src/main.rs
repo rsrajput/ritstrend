@@ -7,14 +7,15 @@ mod indicator_engine;
 mod indicators;
 mod loader;
 mod market_summary;
-mod near_breakout;
 mod models;
+mod near_breakout;
 mod portfolio;
 mod price_series;
 mod ranking;
 mod report;
 mod score_engine;
 mod screener;
+mod trade_execution;
 mod utils;
 mod wilder;
 
@@ -24,6 +25,7 @@ use clap::Parser;
 use crate::analysis::StockAnalysisBuilder;
 use crate::cli::Cli;
 use crate::config::Config;
+use crate::console_report::ConsoleReport;
 use crate::indicator_engine::IndicatorEngine;
 use crate::loader::load_history;
 use crate::market_summary::MarketSummary;
@@ -32,7 +34,6 @@ use crate::price_series::PriceSeries;
 use crate::ranking::RankingEngine;
 use crate::report::ReportGenerator;
 use crate::screener::Screener;
-use crate::console_report::ConsoleReport;
 
 fn main() -> Result<()> {
     let cli = Cli::parse();

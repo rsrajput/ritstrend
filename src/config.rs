@@ -31,11 +31,14 @@ pub struct Config {
     pub near_breakout_min_adx: f64,
     /// Maximum RS rank for near breakout
     pub near_breakout_max_rs_rank: usize,
+    /// ATR multiplier for initial stop loss.
+    pub atr_stop_multiplier: f64,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Self {
+            atr_stop_multiplier: 2.0,
             breakout_period: 55,
             exit_period: 20,
             sma_fast: 50,

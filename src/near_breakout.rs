@@ -24,7 +24,6 @@ impl NearBreakoutEngine {
         min_adx: f64,
         max_rs_rank: usize,
     ) -> Vec<NearBreakout> {
-
         let mut candidates: Vec<NearBreakout> = analyses
             .iter()
             .filter_map(|a| {
@@ -70,11 +69,7 @@ impl NearBreakoutEngine {
             })
             .collect();
 
-        candidates.sort_by(|a, b| {
-            a.distance_percent
-                .partial_cmp(&b.distance_percent)
-                .unwrap()
-        });
+        candidates.sort_by(|a, b| a.distance_percent.partial_cmp(&b.distance_percent).unwrap());
 
         candidates
     }

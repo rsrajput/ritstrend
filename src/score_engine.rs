@@ -18,16 +18,17 @@ pub struct StockScore {
     pub score: u8,
     pub rating: Rating,
     pub reasons: Vec<String>,
+    pub close: f64,
+    pub rs_rank: usize,
+    pub entry_price: Option<f64>,
+    pub stop_price: Option<f64>,
+    pub risk_percent: Option<f64>,
 }
 
 pub struct ScoreEngine;
 
 impl ScoreEngine {
-    pub fn score(
-        analysis: &StockAnalysis,
-        rs_threshold: usize,
-        volume_factor: f64,
-    ) -> StockScore {
+    pub fn score(analysis: &StockAnalysis, rs_threshold: usize, volume_factor: f64) -> StockScore {
         let mut score = 0u8;
         let mut reasons = Vec::new();
 
@@ -40,9 +41,21 @@ impl ScoreEngine {
         let avg = analysis.average_volume50.unwrap_or(0.0);
         let rs = analysis.relative_strength_rank.unwrap_or(usize::MAX);
 
-        if close > don55 { score += 25; } else { reasons.push("Waiting for breakout".into()); }
-        if close > sma200 { score += 20; } else { reasons.push("Below SMA200".into()); }
-        if sma50 > sma200 { score += 15; } else { reasons.push("Weak moving-average trend".into()); }
+        if close > don55 {
+            score += 25;
+        } else {
+            reasons.push("Waiting for breakout".into());
+        }
+        if close > sma200 {
+            score += 20;
+        } else {
+            reasons.push("Below SMA200".into());
+        }
+        if sma50 > sma200 {
+            score += 15;
+        } else {
+            reasons.push("Weak moving-average trend".into());
+        }
 
         if adx >= 40.0 {
             score += 18;
@@ -82,6 +95,17 @@ impl ScoreEngine {
             score,
             rating,
             reasons,
+            close,
+            rs_rank: rs,
+            entry_price: analysis.donchian_high55,
+            stop_price: match (analysis.donchian_high55, analysis.atr15) {
+                (Some(entry), Some(atr)) => Some(entry - atr * 2.0),
+                _ => None,
+            },
+            risk_percent: match (analysis.donchian_high55, analysis.atr15) {
+                (Some(entry), Some(atr)) if entry > 0.0 => Some((atr * 2.0 / entry) * 100.0),
+                _ => None,
+            },
         }
     }
 
@@ -90,7 +114,8 @@ impl ScoreEngine {
         rs_threshold: usize,
         volume_factor: f64,
     ) -> Vec<StockScore> {
-        analyses.iter()
+        analyses
+            .iter()
             .map(|a| Self::score(a, rs_threshold, volume_factor))
             .collect()
     }
