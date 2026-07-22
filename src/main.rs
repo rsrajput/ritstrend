@@ -105,6 +105,7 @@ fn main() -> Result<()> {
             &analyses,
             config.top_percent,
             config.volume_factor,
+            config.atr_stop_multiplier,
         ),
         missing_files,
     );
@@ -114,6 +115,7 @@ fn main() -> Result<()> {
         &summary,
         config.top_percent,
         config.volume_factor,
+        config.atr_stop_multiplier,
         &_near_breakouts,
     );
 

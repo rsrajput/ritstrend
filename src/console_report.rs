@@ -13,9 +13,11 @@ impl ConsoleReport {
         summary: &MarketSummary,
         rs_threshold: usize,
         volume_factor: f64,
+        atr_multiplier: f64,
         near_breakouts: &[NearBreakout],
     ) {
-        let mut scores = ScoreEngine::score_all(analyses, rs_threshold, volume_factor);
+        let mut scores =
+            ScoreEngine::score_all(analyses, rs_threshold, volume_factor, atr_multiplier);
         scores.sort_by(|a, b| b.score.cmp(&a.score));
 
         let lookup: HashMap<&str, &StockAnalysis> =

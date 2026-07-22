@@ -28,7 +28,12 @@ pub struct StockScore {
 pub struct ScoreEngine;
 
 impl ScoreEngine {
-    pub fn score(analysis: &StockAnalysis, rs_threshold: usize, volume_factor: f64) -> StockScore {
+    pub fn score(
+        analysis: &StockAnalysis,
+        rs_threshold: usize,
+        volume_factor: f64,
+        atr_multiplier: f64,
+    ) -> StockScore {
         let mut score = 0u8;
         let mut reasons = Vec::new();
 
@@ -99,11 +104,13 @@ impl ScoreEngine {
             rs_rank: rs,
             entry_price: analysis.donchian_high55,
             stop_price: match (analysis.donchian_high55, analysis.atr15) {
-                (Some(entry), Some(atr)) => Some(entry - atr * 2.0),
+                (Some(entry), Some(atr)) => Some(entry - atr * atr_multiplier),
                 _ => None,
             },
             risk_percent: match (analysis.donchian_high55, analysis.atr15) {
-                (Some(entry), Some(atr)) if entry > 0.0 => Some((atr * 2.0 / entry) * 100.0),
+                (Some(entry), Some(atr)) if entry > 0.0 => {
+                    Some((atr * atr_multiplier / entry) * 100.0)
+                }
                 _ => None,
             },
         }
@@ -113,10 +120,11 @@ impl ScoreEngine {
         analyses: &[StockAnalysis],
         rs_threshold: usize,
         volume_factor: f64,
+        atr_multiplier: f64,
     ) -> Vec<StockScore> {
         analyses
             .iter()
-            .map(|a| Self::score(a, rs_threshold, volume_factor))
+            .map(|a| Self::score(a, rs_threshold, volume_factor, atr_multiplier))
             .collect()
     }
 }
