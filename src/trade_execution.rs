@@ -19,10 +19,7 @@ pub fn entry_price(analysis: &StockAnalysis) -> Option<f64> {
 ///
 /// Formula:
 /// Stop = Entry − (ATR × Multiplier)
-pub fn initial_stop(
-    analysis: &StockAnalysis,
-    atr_multiplier: f64,
-) -> Option<f64> {
+pub fn initial_stop(analysis: &StockAnalysis, atr_multiplier: f64) -> Option<f64> {
     let entry = analysis.donchian_high55?;
     let atr = analysis.atr15?;
 
@@ -34,10 +31,7 @@ pub fn initial_stop(
 /// Formula:
 ///
 /// ((Entry - Stop) / Entry) × 100
-pub fn risk_percent(
-    analysis: &StockAnalysis,
-    atr_multiplier: f64,
-) -> Option<f64> {
+pub fn risk_percent(analysis: &StockAnalysis, atr_multiplier: f64) -> Option<f64> {
     let entry = entry_price(analysis)?;
     let stop = initial_stop(analysis, atr_multiplier)?;
 
@@ -53,10 +47,7 @@ pub fn risk_percent(
 /// This is simply:
 ///
 /// Entry − Stop
-pub fn risk_points(
-    analysis: &StockAnalysis,
-    atr_multiplier: f64,
-) -> Option<f64> {
+pub fn risk_points(analysis: &StockAnalysis, atr_multiplier: f64) -> Option<f64> {
     let entry = entry_price(analysis)?;
     let stop = initial_stop(analysis, atr_multiplier)?;
 
@@ -64,13 +55,8 @@ pub fn risk_points(
 }
 
 /// Returns true if the stock has already broken out.
-pub fn breakout_triggered(
-    analysis: &StockAnalysis,
-) -> bool {
-    match (
-        analysis.latest_close,
-        analysis.donchian_high55,
-    ) {
+pub fn breakout_triggered(analysis: &StockAnalysis) -> bool {
+    match (analysis.latest_close, analysis.donchian_high55) {
         (Some(close), Some(entry)) => close >= entry,
         _ => false,
     }

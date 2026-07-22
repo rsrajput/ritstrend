@@ -30,9 +30,18 @@ mod tests {
     #[test]
     fn ranks_analyses_by_return6m_descending() {
         let mut analyses = vec![
-            StockAnalysisBuilder::new().symbol("LOW").return6m(0.05).build(),
-            StockAnalysisBuilder::new().symbol("HIGH").return6m(0.20).build(),
-            StockAnalysisBuilder::new().symbol("MID").return6m(0.10).build(),
+            StockAnalysisBuilder::new()
+                .symbol("LOW")
+                .return6m(0.05)
+                .build(),
+            StockAnalysisBuilder::new()
+                .symbol("HIGH")
+                .return6m(0.20)
+                .build(),
+            StockAnalysisBuilder::new()
+                .symbol("MID")
+                .return6m(0.10)
+                .build(),
         ];
 
         RankingEngine::rank(&mut analyses);

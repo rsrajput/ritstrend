@@ -28,11 +28,7 @@ pub struct StockScore {
 pub struct ScoreEngine;
 
 impl ScoreEngine {
-    pub fn score(
-        analysis: &StockAnalysis,
-        rs_threshold: usize,
-        volume_factor: f64,
-    ) -> StockScore {
+    pub fn score(analysis: &StockAnalysis, rs_threshold: usize, volume_factor: f64) -> StockScore {
         let mut score = 0u8;
         let mut reasons = Vec::new();
 
@@ -45,9 +41,21 @@ impl ScoreEngine {
         let avg = analysis.average_volume50.unwrap_or(0.0);
         let rs = analysis.relative_strength_rank.unwrap_or(usize::MAX);
 
-        if close > don55 { score += 25; } else { reasons.push("Waiting for breakout".into()); }
-        if close > sma200 { score += 20; } else { reasons.push("Below SMA200".into()); }
-        if sma50 > sma200 { score += 15; } else { reasons.push("Weak moving-average trend".into()); }
+        if close > don55 {
+            score += 25;
+        } else {
+            reasons.push("Waiting for breakout".into());
+        }
+        if close > sma200 {
+            score += 20;
+        } else {
+            reasons.push("Below SMA200".into());
+        }
+        if sma50 > sma200 {
+            score += 15;
+        } else {
+            reasons.push("Weak moving-average trend".into());
+        }
 
         if adx >= 40.0 {
             score += 18;
@@ -106,7 +114,8 @@ impl ScoreEngine {
         rs_threshold: usize,
         volume_factor: f64,
     ) -> Vec<StockScore> {
-        analyses.iter()
+        analyses
+            .iter()
             .map(|a| Self::score(a, rs_threshold, volume_factor))
             .collect()
     }

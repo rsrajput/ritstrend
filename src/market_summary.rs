@@ -22,14 +22,23 @@ pub struct MarketSummary {
 }
 
 impl MarketSummary {
-    pub fn from_scores(
-        scores: &[StockScore],
-        missing_files: usize,
-    ) -> Self {
-        let buy_count = scores.iter().filter(|s| matches!(s.rating, Rating::Buy)).count();
-        let watch_count = scores.iter().filter(|s| matches!(s.rating, Rating::Watch)).count();
-        let monitor_count = scores.iter().filter(|s| matches!(s.rating, Rating::Monitor)).count();
-        let ignore_count = scores.iter().filter(|s| matches!(s.rating, Rating::Ignore)).count();
+    pub fn from_scores(scores: &[StockScore], missing_files: usize) -> Self {
+        let buy_count = scores
+            .iter()
+            .filter(|s| matches!(s.rating, Rating::Buy))
+            .count();
+        let watch_count = scores
+            .iter()
+            .filter(|s| matches!(s.rating, Rating::Watch))
+            .count();
+        let monitor_count = scores
+            .iter()
+            .filter(|s| matches!(s.rating, Rating::Monitor))
+            .count();
+        let ignore_count = scores
+            .iter()
+            .filter(|s| matches!(s.rating, Rating::Ignore))
+            .count();
 
         let (highest_score, strongest_symbol) = scores
             .iter()
@@ -37,9 +46,8 @@ impl MarketSummary {
             .map(|s| (s.score, s.symbol.clone()))
             .unwrap_or((0, String::from("-")));
 
-        let trend_confidence =
-            (((buy_count * 100) + (watch_count * 70) + (monitor_count * 30))
-                / scores.len().max(1)) as u8;
+        let trend_confidence = (((buy_count * 100) + (watch_count * 70) + (monitor_count * 30))
+            / scores.len().max(1)) as u8;
 
         let market_verdict = if trend_confidence >= 70 {
             "FAVORABLE"
@@ -47,7 +55,8 @@ impl MarketSummary {
             "NEUTRAL"
         } else {
             "DEFENSIVE"
-        }.to_string();
+        }
+        .to_string();
 
         Self {
             stocks_loaded: scores.len(),

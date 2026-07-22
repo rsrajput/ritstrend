@@ -11,7 +11,11 @@ pub struct ReportGenerator;
 
 impl ReportGenerator {
     /// Write buy candidates to a CSV report in the target directory.
-    pub fn write(analyses: &[StockAnalysis], report_dir: impl AsRef<Path>, filename: &str) -> Result<()> {
+    pub fn write(
+        analyses: &[StockAnalysis],
+        report_dir: impl AsRef<Path>,
+        filename: &str,
+    ) -> Result<()> {
         let report_dir = report_dir.as_ref();
         fs::create_dir_all(report_dir)?;
 
@@ -19,14 +23,7 @@ impl ReportGenerator {
         let mut writer = WriterBuilder::new().has_headers(true).from_path(&path)?;
 
         writer.write_record([
-            "Symbol",
-            "Date",
-            "Close",
-            "SMA50",
-            "SMA200",
-            "ADX14",
-            "Return6M",
-            "RS Rank",
+            "Symbol", "Date", "Close", "SMA50", "SMA200", "ADX14", "Return6M", "RS Rank",
             "RS Score",
         ])?;
 
