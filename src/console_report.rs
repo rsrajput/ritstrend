@@ -58,7 +58,7 @@ impl ConsoleReport {
 
         println!();
         println!("==========================================================================");
-        println!("                        TRADE SETUPS & WATCHLIST");
+        println!("                           TRADING DASHBOARD");
         println!("==========================================================================");
         println!(
             "Stocks Loaded : {}    Missing Files : {}",
@@ -74,7 +74,7 @@ impl ConsoleReport {
             "{:<4} {:<14} {:>10} {:>4} {:>5} {:<9} {}",
             "Rank", "Symbol", "Close", "RS", "Score", "Rating", "Primary Reason"
         );
-        println!("(BUY, WATCH, MONITOR and IGNORE are shown together in this version.)");
+        println!("Tip: BUY = actionable, WATCH = close to qualifying, MONITOR = trend developing.");
         println!("{}", "-".repeat(94));
         for (i, s) in scores.iter().take(20).enumerate() {
             let analysis = lookup.get(s.symbol.as_str()).copied();
