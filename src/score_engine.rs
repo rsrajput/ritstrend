@@ -18,6 +18,11 @@ pub struct StockScore {
     pub score: u8,
     pub rating: Rating,
     pub reasons: Vec<String>,
+    pub close: f64,
+    pub rs_rank: usize,
+    pub entry_price: Option<f64>,
+    pub stop_price: Option<f64>,
+    pub risk_percent: Option<f64>,
 }
 
 pub struct ScoreEngine;
@@ -82,6 +87,17 @@ impl ScoreEngine {
             score,
             rating,
             reasons,
+            close,
+            rs_rank: rs,
+            entry_price: analysis.donchian_high55,
+            stop_price: match (analysis.donchian_high55, analysis.atr15) {
+                (Some(entry), Some(atr)) => Some(entry - atr * 2.0),
+                _ => None,
+            },
+            risk_percent: match (analysis.donchian_high55, analysis.atr15) {
+                (Some(entry), Some(atr)) if entry > 0.0 => Some((atr * 2.0 / entry) * 100.0),
+                _ => None,
+            },
         }
     }
 

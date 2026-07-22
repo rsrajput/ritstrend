@@ -41,12 +41,13 @@ impl ConsoleReport {
 
         println!();
         println!("==========================================================================");
-        println!("                           RITS TREND v0.4");
+        println!("                        TRADE SETUPS & WATCHLIST");
         println!("==========================================================================");
         println!("Stocks Loaded : {}    Missing Files : {}", analyses.len(), summary.missing_files);
         println!("BUY:{}  WATCH:{}  MONITOR:{}  IGNORE:{}", buy,watch,monitor,ignore);
         println!("{}", "-".repeat(94));
         println!("{:<4} {:<14} {:>10} {:>4} {:>5} {:<9} {}", "Rank","Symbol","Close","RS","Score","Rating","Primary Reason");
+        println!("(BUY, WATCH, MONITOR and IGNORE are shown together in this version.)");
         println!("{}", "-".repeat(94));
         for (i,s) in scores.iter().take(20).enumerate() {
             let analysis = lookup.get(s.symbol.as_str()).copied();

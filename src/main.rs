@@ -15,6 +15,7 @@ mod ranking;
 mod report;
 mod score_engine;
 mod screener;
+mod trade_execution;
 mod utils;
 mod wilder;
 
