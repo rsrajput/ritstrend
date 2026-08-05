@@ -218,7 +218,6 @@ based on market breadth:
 -   Market verdict
 
 # Rits Terminal commands
-
 1.
 
 cd ~/rits_rust_donchian_screener/target/release && ./donchian_engine --tickers-file nse500.txt
@@ -231,9 +230,21 @@ python update_data.py --tickers-file tickers/nse500.txt --output-dir data --peri
 RUSTFLAGS="-Awarnings" cargo run -- --tickers-file tickers/nse500.txt --data-dir data --report-dir reports
 
 cd ~/Documents/ritstrend && source .venv/bin/activate
+python update_data.py --tickers-file tickers/midcap150.txt --output-dir data --period 5y
+RUSTFLAGS="-Awarnings" cargo run -- --tickers-file tickers/midcap150.txt --data-dir data --report-dir reports
+
+cd ~/Documents/ritstrend && source .venv/bin/activate
+python update_data.py --tickers-file tickers/smallcap500.txt --output-dir data --period 5y
+RUSTFLAGS="-Awarnings" cargo run -- --tickers-file tickers/smallcap500.txt --data-dir data --report-dir reports
+
+cd ~/Documents/ritstrend && source .venv/bin/activate
 RUSTFLAGS="-Awarnings" cargo run -- --tickers-file tickers/nse500.txt --data-dir data --report-dir reports
 
+cd ~/Documents/ritstrend && source .venv/bin/activate
+RUSTFLAGS="-Awarnings" cargo run -- --tickers-file tickers/midcap150.txt --data-dir data --report-dir reports
 
+cd ~/Documents/ritstrend && source .venv/bin/activate
+RUSTFLAGS="-Awarnings" cargo run -- --tickers-file tickers/smallcap500.txt --data-dir data --report-dir reports
 
 
 
