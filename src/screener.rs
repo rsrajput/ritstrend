@@ -17,7 +17,7 @@ impl Screener {
         let threshold = ((analyses.len() as f64) * (top_percent as f64 / 100.0)).ceil() as usize;
         let threshold = threshold.max(1);
 
-        println!("\n========== BREAKOUT STOCK DIAGNOSTICS ==========");
+        // println!("\n========== BREAKOUT STOCK DIAGNOSTICS ==========");
 
         let mut buys = Vec::new();
 
@@ -40,18 +40,6 @@ impl Screener {
                 let vol_ok = vol > volume_factor * avg;
                 let rs_ok = rs <= threshold;
 
-                println!(
-                    "{:<15} Trend:{} MA:{} ADX:{} Vol:{} RS:{}  Close={:.2} Don={:.2}",
-                    a.symbol,
-                    if trend { "Y" } else { "N" },
-                    if ma { "Y" } else { "N" },
-                    if adx_ok { "Y" } else { "N" },
-                    if vol_ok { "Y" } else { "N" },
-                    if rs_ok { "Y" } else { "N" },
-                    c,
-                    d
-                );
-
                 if trend && ma && adx_ok && vol_ok && rs_ok {
                     let mut buy = a.clone();
                     buy.signal = Some(Signal::Buy);
@@ -61,7 +49,7 @@ impl Screener {
             }
         }
 
-        println!("===============================================\n");
+        // println!("===============================================\n");
         buys
     }
 }

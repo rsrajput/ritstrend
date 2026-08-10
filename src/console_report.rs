@@ -71,8 +71,8 @@ impl ConsoleReport {
         );
         println!("{}", "-".repeat(108));
         println!(
-            "{:<4} {:<14} {:>10} {:>10} {:>7} {:>4} {:>5} {:<9} {}",
-            "Rank", "Symbol", "Close", "ATR(15)", "ATR %", "RS", "Score", "Rating", "Primary Reason"
+            "{:<4} {:<14} {:>10} {:>10} {:>10} {:>10} {:>4} {:>5} {:<9} {}",
+            "Rank", "Symbol", "Close", "ATR(15)%", "ATR×1.5%", "ATR×2%", "RS", "Score", "Rating", "Primary Reason"
         );
         println!("(BUY, WATCH, MONITOR and IGNORE are shown together in this version.)");
         println!("{}", "-".repeat(108));
@@ -89,6 +89,8 @@ impl ConsoleReport {
             } else {
                 0.0
             };
+            let atr_1_5_percent = atr_percent * 1.5;
+            let atr_2_percent = atr_percent * 2.0;
 
             let rating = match s.rating {
                 Rating::Buy => "BUY",
@@ -102,12 +104,13 @@ impl ConsoleReport {
                 .map(String::as_str)
                 .unwrap_or("All conditions satisfied");
             println!(
-                "{:<4} {:<14} {:>10.2} {:>10.2} {:>6.2}% {:>4} {:>5} {:<9} {}",
+                "{:<4} {:<14} {:>10.2} {:>9.2}% {:>9.2}% {:>9.2}% {:>4} {:>5} {:<9} {}",
                 i + 1,
                 s.symbol,
                 close,
-                atr15,
                 atr_percent,
+                atr_1_5_percent,
+                atr_2_percent,
                 rs_rank,
                 s.score,
                 rating,
