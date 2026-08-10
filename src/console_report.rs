@@ -69,13 +69,25 @@ impl ConsoleReport {
             "BUY:{}  WATCH:{}  MONITOR:{}  IGNORE:{}",
             buy, watch, monitor, ignore
         );
-        println!("{}", "-".repeat(108));
+        println!("{}", "-".repeat(132));
         println!(
-            "{:<4} {:<14} {:>10} {:>10} {:>10} {:>10} {:>4} {:>5} {:<9} {}",
-            "Rank", "Symbol", "Close", "ATR(15)%", "ATR×1.5%", "ATR×2%", "RS", "Score", "Rating", "Primary Reason"
+            "{:<4} {:<14} {:>10} {:>10} {:>10} {:>10} {:>11} {:>13} {:>11} {:>4} {:>5} {:<9} {}",
+            "Rank",
+            "Symbol",
+            "Close",
+            "ATR(15)%",
+            "ATR×1.5%",
+            "ATR×2%",
+            "Swing Low",
+            "Structure SL",
+            "Chandelier",
+            "RS",
+            "Score",
+            "Rating",
+            "Primary Reason"
         );
         println!("(BUY, WATCH, MONITOR and IGNORE are shown together in this version.)");
-        println!("{}", "-".repeat(108));
+        println!("{}", "-".repeat(132));
         for (i, s) in scores.iter().take(20).enumerate() {
             let analysis = lookup.get(s.symbol.as_str()).copied();
 
@@ -92,6 +104,51 @@ impl ConsoleReport {
             let atr_1_5_percent = atr_percent * 1.5;
             let atr_2_percent = atr_percent * 2.0;
 
+            // Stop levels are displayed only as percentages below the current
+            // close, matching Zerodha's percentage-based TSL workflow.
+            //
+            // These values now come from the dedicated smart-stop calculations
+            // in indicator_engine.rs rather than being recalculated from the
+            // old Donchian fields here.
+            //
+            // Swing Low: most recent confirmed pivot low.
+            // Structure SL: Swing Low - 0.5 x ATR(15).
+            // Chandelier: Chandelier high - 3 x ATR(15).
+            let swing_low_percent = analysis
+                .and_then(|a| a.swing_low)
+                .map(|swing_low| {
+                    if close > 0.0 {
+                        ((close - swing_low) / close) * 100.0
+                    } else {
+                        0.0
+                    }
+                })
+                .unwrap_or(0.0);
+
+            let structure_sl_percent = analysis
+                .and_then(|a| a.swing_low)
+                .map(|swing_low| {
+                    if close > 0.0 {
+                        let structure_sl = swing_low - (atr15 * 0.5);
+                        ((close - structure_sl) / close) * 100.0
+                    } else {
+                        0.0
+                    }
+                })
+                .unwrap_or(0.0);
+
+            let chandelier_percent = analysis
+                .and_then(|a| a.chandelier_high)
+                .map(|highest_high| {
+                    if close > 0.0 {
+                        let chandelier = highest_high - (atr15 * 3.0);
+                        Some(((close - chandelier) / close) * 100.0)
+                    } else {
+                        None
+                    }
+                })
+                .flatten();
+
             let rating = match s.rating {
                 Rating::Buy => "BUY",
                 Rating::Watch => "WATCH",
@@ -104,13 +161,19 @@ impl ConsoleReport {
                 .map(String::as_str)
                 .unwrap_or("All conditions satisfied");
             println!(
-                "{:<4} {:<14} {:>10.2} {:>9.2}% {:>9.2}% {:>9.2}% {:>4} {:>5} {:<9} {}",
+                "{:<4} {:<14} {:>10.2} {:>9.2}% {:>9.2}% {:>9.2}% {:>10.2}% {:>12.2}% {:>10} {:>4} {:>5} {:<9} {}",
                 i + 1,
                 s.symbol,
                 close,
                 atr_percent,
                 atr_1_5_percent,
                 atr_2_percent,
+                swing_low_percent,
+                structure_sl_percent,
+                match chandelier_percent {
+                    Some(value) => format!("{:.2}%", value),
+                    None => "N/A".to_string(),
+                },
                 rs_rank,
                 s.score,
                 rating,
@@ -118,7 +181,7 @@ impl ConsoleReport {
             );
         }
 
-        println!("{}", "-".repeat(94));
+        println!("{}", "-".repeat(132));
 
         println!();
         println!("==========================================================================");

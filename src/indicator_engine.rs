@@ -52,6 +52,22 @@ impl IndicatorEngine {
 
         if let Some(atr15) = AtrCalculator::atr(series, 15) {
             builder.set_atr15(atr15);
+
+            if let Some(current_close) = series.latest().map(|c| c.close) {
+                if let Some(swing_low) = Self::recent_swing_low_below_price(series, 2, current_close) {
+                    builder.set_swing_low(swing_low);
+                }
+
+                // Only expose a Chandelier reference when the resulting
+                // 3×ATR stop is actually below the current price. This avoids
+                // producing a negative stop distance such as -13.82%.
+                if let Some(chandelier_high) = Self::highest_high_excluding_current(series, 22) {
+                    let chandelier_stop = chandelier_high - (atr15 * 3.0);
+                    if chandelier_stop < current_close {
+                        builder.set_chandelier_high(chandelier_high);
+                    }
+                }
+            }
         }
 
         if let Some(return6m) = Self::return_period(series, 126) {
@@ -135,6 +151,66 @@ impl IndicatorEngine {
         }
 
         Some(current_close / prior_close - 1.0)
+    }
+
+    /// Find the most recent confirmed pivot low that is below the
+    /// current market price.
+    ///
+    /// A pivot low has a lower low than `strength` candles on both sides.
+    /// The latest candle is excluded because it cannot yet be confirmed as
+    /// a pivot without future candles.
+    pub fn recent_swing_low_below_price(
+        series: &PriceSeries,
+        strength: usize,
+        current_close: f64,
+    ) -> Option<f64> {
+        if strength == 0 || series.len() < (strength * 2 + 1) {
+            return None;
+        }
+
+        let last_confirmable = series.len().checked_sub(strength + 1)?;
+
+        for index in (strength..=last_confirmable).rev() {
+            let pivot_low = series.low(index)?;
+
+            // A stop based on this pivot must be below the current price.
+            if pivot_low >= current_close {
+                continue;
+            }
+
+            let left_clear = (1..=strength).all(|offset| {
+                series
+                    .low(index - offset)
+                    .map(|low| pivot_low < low)
+                    .unwrap_or(false)
+            });
+
+            let right_clear = (1..=strength).all(|offset| {
+                series
+                    .low(index + offset)
+                    .map(|low| pivot_low < low)
+                    .unwrap_or(false)
+            });
+
+            if left_clear && right_clear {
+                return Some(pivot_low);
+            }
+        }
+
+        None
+    }
+
+    /// Return the highest high over the previous `period` completed candles,
+    /// excluding the latest candle.
+    pub fn highest_high_excluding_current(
+        series: &PriceSeries,
+        period: usize,
+    ) -> Option<f64> {
+        if period == 0 || series.len() <= period {
+            return None;
+        }
+
+        Self::window_values(series, period, true, |candle| candle.high).reduce(f64::max)
     }
 
     fn window_values<'a, F>(
@@ -230,6 +306,62 @@ mod tests {
         };
 
         assert_eq!(IndicatorEngine::donchian_low(&series, 2), Some(10.0));
+    }
+
+    #[test]
+    fn recent_swing_low_finds_the_most_recent_confirmed_pivot() {
+        let series = match price_series_from_rows(&[
+            ("2024-01-01", 10.0, 11.0, 9.0, 100.0),
+            ("2024-01-02", 11.0, 12.0, 10.0, 100.0),
+            ("2024-01-03", 9.0, 10.0, 8.0, 100.0),
+            ("2024-01-04", 10.0, 11.0, 9.0, 100.0),
+            ("2024-01-05", 12.0, 13.0, 11.0, 100.0),
+            ("2024-01-06", 11.0, 12.0, 10.0, 100.0),
+        ]) {
+            Some(series) => series,
+            None => return,
+        };
+
+        assert_eq!(IndicatorEngine::recent_swing_low(&series, 1), Some(8.0));
+    }
+
+    #[test]
+    fn recent_swing_low_below_price_ignores_pivot_above_current_price() {
+        let series = match price_series_from_rows(&[
+            ("2024-01-01", 100.0, 105.0, 98.0, 100.0),
+            ("2024-01-02", 102.0, 106.0, 99.0, 100.0),
+            ("2024-01-03", 110.0, 112.0, 108.0, 100.0),
+            ("2024-01-04", 104.0, 106.0, 101.0, 100.0),
+            ("2024-01-05", 103.0, 105.0, 100.0, 100.0),
+        ]) {
+            Some(series) => series,
+            None => return,
+        };
+
+        // The most recent confirmed pivot (day 3) is above 102, so it
+        // should be ignored; the next valid pivot below current price is used.
+        assert_eq!(
+            IndicatorEngine::recent_swing_low_below_price(&series, 1, 102.0),
+            Some(98.0)
+        );
+    }
+
+    #[test]
+    fn highest_high_excluding_current_skips_latest_candle() {
+        let series = match price_series_from_rows(&[
+            ("2024-01-01", 10.0, 11.0, 9.0, 100.0),
+            ("2024-01-02", 12.0, 13.0, 10.0, 100.0),
+            ("2024-01-03", 14.0, 15.0, 13.0, 100.0),
+            ("2024-01-04", 16.0, 17.0, 15.0, 100.0),
+        ]) {
+            Some(series) => series,
+            None => return,
+        };
+
+        assert_eq!(
+            IndicatorEngine::highest_high_excluding_current(&series, 2),
+            Some(15.0)
+        );
     }
 
     #[test]

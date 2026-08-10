@@ -32,6 +32,10 @@ pub struct StockAnalysis {
     pub donchian_high55: Option<f64>,
     /// 20-period Donchian low, when available.
     pub donchian_low20: Option<f64>,
+    /// Most recent confirmed swing low, when available.
+    pub swing_low: Option<f64>,
+    /// Highest high over the Chandelier lookback window, when available.
+    pub chandelier_high: Option<f64>,
     /// Six-month return, when available.
     pub return6m: Option<f64>,
     /// Twelve-month return, when available.
@@ -72,6 +76,8 @@ pub struct StockAnalysisBuilder {
     average_volume50: Option<f64>,
     donchian_high55: Option<f64>,
     donchian_low20: Option<f64>,
+    swing_low: Option<f64>,
+    chandelier_high: Option<f64>,
     return6m: Option<f64>,
     return12m: Option<f64>,
     relative_strength_score: Option<f64>,
@@ -151,6 +157,18 @@ impl StockAnalysisBuilder {
     /// Set the 20-period Donchian low value.
     pub fn donchian_low20(mut self, donchian_low20: f64) -> Self {
         self.donchian_low20 = Some(donchian_low20);
+        self
+    }
+
+    /// Set the most recent confirmed swing low.
+    pub fn swing_low(mut self, swing_low: f64) -> Self {
+        self.swing_low = Some(swing_low);
+        self
+    }
+
+    /// Set the Chandelier lookback high.
+    pub fn chandelier_high(mut self, chandelier_high: f64) -> Self {
+        self.chandelier_high = Some(chandelier_high);
         self
     }
 
@@ -251,6 +269,16 @@ impl StockAnalysisBuilder {
         self.donchian_low20 = Some(donchian_low20);
     }
 
+    /// Set the most recent confirmed swing low through a mutable builder reference.
+    pub fn set_swing_low(&mut self, swing_low: f64) {
+        self.swing_low = Some(swing_low);
+    }
+
+    /// Set the Chandelier lookback high through a mutable builder reference.
+    pub fn set_chandelier_high(&mut self, chandelier_high: f64) {
+        self.chandelier_high = Some(chandelier_high);
+    }
+
     /// Set the six-month return through a mutable builder reference.
     pub fn set_return6m(&mut self, return6m: f64) {
         self.return6m = Some(return6m);
@@ -275,6 +303,8 @@ impl StockAnalysisBuilder {
             average_volume50: self.average_volume50,
             donchian_high55: self.donchian_high55,
             donchian_low20: self.donchian_low20,
+            swing_low: self.swing_low,
+            chandelier_high: self.chandelier_high,
             return6m: self.return6m,
             return12m: self.return12m,
             relative_strength_score: self.relative_strength_score,
@@ -316,6 +346,8 @@ mod tests {
             .average_volume50(200_000.0)
             .donchian_high55(110.0)
             .donchian_low20(90.0)
+            .swing_low(92.0)
+            .chandelier_high(112.0)
             .return6m(12.5)
             .return12m(25.0)
             .relative_strength_score(1.75)
@@ -339,6 +371,8 @@ mod tests {
         assert_eq!(analysis.average_volume50, Some(200_000.0));
         assert_eq!(analysis.donchian_high55, Some(110.0));
         assert_eq!(analysis.donchian_low20, Some(90.0));
+        assert_eq!(analysis.swing_low, Some(92.0));
+        assert_eq!(analysis.chandelier_high, Some(112.0));
         assert_eq!(analysis.return6m, Some(12.5));
         assert_eq!(analysis.return12m, Some(25.0));
         assert_eq!(analysis.relative_strength_score, Some(1.75));
