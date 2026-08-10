@@ -1,6 +1,7 @@
 use anyhow::Result;
 
 use crate::adx::AdxCalculator;
+use crate::atr::AtrCalculator;
 use crate::analysis::StockAnalysisBuilder;
 use crate::models::Candle;
 use crate::price_series::PriceSeries;
@@ -47,6 +48,10 @@ impl IndicatorEngine {
 
         if let Some(adx14) = AdxCalculator::adx(series, 14) {
             builder.set_adx14(adx14);
+        }
+
+        if let Some(atr15) = AtrCalculator::atr(series, 15) {
+            builder.set_atr15(atr15);
         }
 
         if let Some(return6m) = Self::return_period(series, 126) {

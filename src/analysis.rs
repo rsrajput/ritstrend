@@ -226,6 +226,11 @@ impl StockAnalysisBuilder {
         self.sma200 = Some(sma200);
     }
 
+    /// Set the 15-period ATR value through a mutable builder reference.
+    pub fn set_atr15(&mut self, atr15: f64) {
+        self.atr15 = Some(atr15);
+    }
+
     /// Set the 50-period average volume through a mutable builder reference.
     pub fn set_average_volume50(&mut self, average_volume50: f64) {
         self.average_volume50 = Some(average_volume50);

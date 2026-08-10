@@ -1,5 +1,6 @@
 mod adx;
 mod analysis;
+mod atr;
 mod cli;
 mod config;
 mod console_report;

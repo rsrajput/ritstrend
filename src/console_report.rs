@@ -69,19 +69,26 @@ impl ConsoleReport {
             "BUY:{}  WATCH:{}  MONITOR:{}  IGNORE:{}",
             buy, watch, monitor, ignore
         );
-        println!("{}", "-".repeat(94));
+        println!("{}", "-".repeat(108));
         println!(
-            "{:<4} {:<14} {:>10} {:>4} {:>5} {:<9} {}",
-            "Rank", "Symbol", "Close", "RS", "Score", "Rating", "Primary Reason"
+            "{:<4} {:<14} {:>10} {:>10} {:>7} {:>4} {:>5} {:<9} {}",
+            "Rank", "Symbol", "Close", "ATR(15)", "ATR %", "RS", "Score", "Rating", "Primary Reason"
         );
         println!("(BUY, WATCH, MONITOR and IGNORE are shown together in this version.)");
-        println!("{}", "-".repeat(94));
+        println!("{}", "-".repeat(108));
         for (i, s) in scores.iter().take(20).enumerate() {
             let analysis = lookup.get(s.symbol.as_str()).copied();
 
             let close = analysis.and_then(|a| a.latest_close).unwrap_or(0.0);
 
             let rs_rank = analysis.and_then(|a| a.relative_strength_rank).unwrap_or(0);
+
+            let atr15 = analysis.and_then(|a| a.atr15).unwrap_or(0.0);
+            let atr_percent = if close > 0.0 {
+                (atr15 / close) * 100.0
+            } else {
+                0.0
+            };
 
             let rating = match s.rating {
                 Rating::Buy => "BUY",
@@ -95,10 +102,12 @@ impl ConsoleReport {
                 .map(String::as_str)
                 .unwrap_or("All conditions satisfied");
             println!(
-                "{:<4} {:<14} {:>10.2} {:>4} {:>5} {:<9} {}",
+                "{:<4} {:<14} {:>10.2} {:>10.2} {:>6.2}% {:>4} {:>5} {:<9} {}",
                 i + 1,
                 s.symbol,
                 close,
+                atr15,
+                atr_percent,
                 rs_rank,
                 s.score,
                 rating,
@@ -129,6 +138,6 @@ impl ConsoleReport {
             );
         }
 
-        println!("{}", "-".repeat(94));
+        println!("{}", "-".repeat(108));
     }
 }
