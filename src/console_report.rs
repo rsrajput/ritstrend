@@ -160,8 +160,24 @@ impl ConsoleReport {
                 .first()
                 .map(String::as_str)
                 .unwrap_or("All conditions satisfied");
+            // Alternate row background colours to make the wide table easier
+            // to scan in the terminal. ANSI 256-colour codes are used so the
+            // effect remains subtle while preserving the existing text layout.
+            let row_prefix = if i % 2 == 1 {
+                // Blue-tinted background for clear row separation.
+                "\x1b[48;5;24m\x1b[38;5;255m"
+            } else {
+                ""
+            };
+            let row_reset = if i % 2 == 1 {
+                "\x1b[0m"
+            } else {
+                ""
+            };
+
             println!(
-                "{:<4} {:<14} {:>10.2} {:>9.2}% {:>9.2}% {:>9.2}% {:>10.2}% {:>12.2}% {:>10} {:>4} {:>5} {:<9} {}",
+                "{}{:<4} {:<14} {:>10.2} {:>9.2}% {:>9.2}% {:>9.2}% {:>10.2}% {:>12.2}% {:>10} {:>4} {:>5} {:<9} {}{}",
+                row_prefix,
                 i + 1,
                 s.symbol,
                 close,
@@ -177,7 +193,8 @@ impl ConsoleReport {
                 rs_rank,
                 s.score,
                 rating,
-                reason
+                reason,
+                row_reset
             );
         }
 
