@@ -23,4 +23,12 @@ pub struct Cli {
     /// Directory where reports should be written.
     #[arg(long, default_value = "reports")]
     pub report_dir: String,
+
+    /// Show the detailed ATR/stop-loss table for every successfully analysed
+    /// ticker instead of only the top 20 ranked stocks.
+    ///
+    /// This does not change the screening or ranking logic. It only changes
+    /// how many analysed stocks are displayed in the detailed console table.
+    #[arg(long)]
+    pub all: bool,
 }

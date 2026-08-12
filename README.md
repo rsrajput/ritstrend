@@ -238,6 +238,10 @@ python update_data.py --tickers-file tickers/smallcap500.txt --output-dir data -
 RUSTFLAGS="-Awarnings" cargo run -- --tickers-file tickers/smallcap500.txt --data-dir data --report-dir reports
 
 cd ~/Documents/ritstrend && source .venv/bin/activate
+python update_data.py --tickers-file tickers/zerodha.txt --output-dir data --period 5y
+RUSTFLAGS="-Awarnings" cargo run -- --tickers-file tickers/zerodha.txt --data-dir data --report-dir reports --all
+
+cd ~/Documents/ritstrend && source .venv/bin/activate
 RUSTFLAGS="-Awarnings" cargo run -- --tickers-file tickers/nse500.txt --data-dir data --report-dir reports
 
 cd ~/Documents/ritstrend && source .venv/bin/activate
@@ -245,6 +249,9 @@ RUSTFLAGS="-Awarnings" cargo run -- --tickers-file tickers/midcap150.txt --data-
 
 cd ~/Documents/ritstrend && source .venv/bin/activate
 RUSTFLAGS="-Awarnings" cargo run -- --tickers-file tickers/smallcap500.txt --data-dir data --report-dir reports
+
+cd ~/Documents/ritstrend && source .venv/bin/activate
+RUSTFLAGS="-Awarnings" cargo run -- --tickers-file tickers/zerodha.txt --data-dir data --report-dir reports --all
 
 
 
@@ -261,4 +268,3 @@ cargo run -- \
     --tickers-file tickers/nse500.txt \
     --data-dir data \
     --report-dir reports
-

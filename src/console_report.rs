@@ -8,12 +8,32 @@ use std::collections::HashMap;
 pub struct ConsoleReport;
 
 impl ConsoleReport {
+    /// Existing default report: preserve the current top-20 behavior.
     pub fn print(
         analyses: &[StockAnalysis],
         summary: &MarketSummary,
         rs_threshold: usize,
         volume_factor: f64,
         near_breakouts: &[NearBreakout],
+    ) {
+        Self::print_with_all(
+            analyses,
+            summary,
+            rs_threshold,
+            volume_factor,
+            near_breakouts,
+            false,
+        );
+    }
+
+    /// Print the detailed table, optionally including every analysed stock.
+    pub fn print_with_all(
+        analyses: &[StockAnalysis],
+        summary: &MarketSummary,
+        rs_threshold: usize,
+        volume_factor: f64,
+        near_breakouts: &[NearBreakout],
+        show_all: bool,
     ) {
         let mut scores = ScoreEngine::score_all(analyses, rs_threshold, volume_factor);
         scores.sort_by(|a, b| b.score.cmp(&a.score));
@@ -88,7 +108,14 @@ impl ConsoleReport {
         );
         println!("(BUY, WATCH, MONITOR and IGNORE are shown together in this version.)");
         println!("{}", "-".repeat(132));
-        for (i, s) in scores.iter().take(20).enumerate() {
+        let display_count = if show_all { scores.len() } else { 20 };
+
+        if show_all {
+            println!("Showing all {} successfully analysed stocks.", scores.len());
+            println!("{}", "-".repeat(132));
+        }
+
+        for (i, s) in scores.iter().take(display_count).enumerate() {
             let analysis = lookup.get(s.symbol.as_str()).copied();
 
             let close = analysis.and_then(|a| a.latest_close).unwrap_or(0.0);

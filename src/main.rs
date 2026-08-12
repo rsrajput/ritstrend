@@ -110,12 +110,13 @@ fn main() -> Result<()> {
         missing_files,
     );
 
-    ConsoleReport::print(
+    ConsoleReport::print_with_all(
         &analyses,
         &summary,
         config.top_percent,
         config.volume_factor,
         &_near_breakouts,
+        cli.all,
     );
 
     let buys = Screener::screen(&analyses, config.top_percent, config.volume_factor);
