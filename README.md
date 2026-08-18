@@ -217,13 +217,13 @@ based on market breadth:
 -   Breakout participation
 -   Market verdict
 
-# Rits Terminal commands
-# 1. (my previous scanner - not related to ritstrend project)
+## Rits Terminal commands
+### 1. (my previous scanner - not related to ritstrend project)
 
 cd ~/rits_rust_donchian_screener/target/release && ./donchian_engine --tickers-file nse500.txt
 
 
-# 2. release build
+### 2. release build
 
 cd ~/Documents/ritstrend && source .venv/bin/activate
 python update_data.py --tickers-file tickers/nse500.txt --output-dir data --period 5y
@@ -241,7 +241,7 @@ cd ~/Documents/ritstrend && source .venv/bin/activate
 python update_data.py --tickers-file tickers/zerodha.txt --output-dir data --period 5y
 ./target/release/ritstrend --tickers-file tickers/zerodha.txt --data-dir data --report-dir reports  --all
 
-# 3. release build (without download)
+### 3. release build (without download)
 
 cd ~/Documents/ritstrend && ./target/release/ritstrend --tickers-file tickers/nse500.txt --data-dir data --report-dir reports
 
@@ -251,7 +251,7 @@ cd ~/Documents/ritstrend && ./target/release/ritstrend --tickers-file tickers/sm
 
 cd ~/Documents/ritstrend && ./target/release/ritstrend --tickers-file tickers/zerodha.txt --data-dir data --report-dir reports  --all
 
-# 4. Debug build
+### 4. Debug build
 
 cd ~/Documents/ritstrend && source .venv/bin/activate
 python update_data.py --tickers-file tickers/nse500.txt --output-dir data --period 5y
@@ -269,7 +269,7 @@ cd ~/Documents/ritstrend && source .venv/bin/activate
 python update_data.py --tickers-file tickers/zerodha.txt --output-dir data --period 5y
 RUSTFLAGS="-Awarnings" cargo run -- --tickers-file tickers/zerodha.txt --data-dir data --report-dir reports --all
 
-# 5. Debug build (without download)
+### 5. Debug build (without download)
 
 cd ~/Documents/ritstrend && RUSTFLAGS="-Awarnings" cargo run -- --tickers-file tickers/nse500.txt --data-dir data --report-dir reports
 
@@ -279,7 +279,7 @@ cd ~/Documents/ritstrend && RUSTFLAGS="-Awarnings" cargo run -- --tickers-file t
 
 cd ~/Documents/ritstrend && RUSTFLAGS="-Awarnings" cargo run -- --tickers-file tickers/zerodha.txt --data-dir data --report-dir reports --all
 
-# 6. multiline prompt (debug build)
+### 6. multiline prompt (debug build)
 
 cd Documents/ritstrend
 source .venv/bin/activate
